@@ -2,12 +2,9 @@ FROM nginx:1.13-alpine
 MAINTAINER Loric Brevet loric.brevet@gmail.com
 
 # Install wget and install/updates certificates
-RUN apt-get update \
- && apt-get install -y -q --no-install-recommends \
-    ca-certificates \
-    wget \
- && apt-get clean \
- && rm -r /var/lib/apt/lists/*
+RUN apk add --no-cache --virtual .run-deps \
+    ca-certificates bash wget openssl \
+    && update-ca-certificates
 
 # Configure Nginx and apply fix for very long server names
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
