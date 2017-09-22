@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    {{ $title := or (first (keys (groupByLabel $ "traefik.home.title"))) "Applications" }}
+    <title>{{ $title }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+
+    {{/* Include custom style */}}
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    {{/* Inline style for navbar */}}
+    <style>
+        {{/* Nav bar color */}}
+        {{ $bg_color := or (first (keys (groupByLabel $ "traefik.home.navbgcolor"))) "#222" }}
+        {{ $text_color := or (first (keys (groupByLabel $ "traefik.home.navtextcolor"))) "#fff" }}
+
+        .navbar {
+            background-color: {{ $bg_color }};
+            border: none;
+        }
+        .navbar-brand {
+            color: {{ $text_color }};
+        }
+        .navbar-brand:hover {
+            color: {{ $text_color }};
+        }
+        .navbar-brand > img {
+            height: 100%;
+            padding: 0 10px 0 0;
+            width: auto;
+            display: inline-block;
+        }
+    </style>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <span class="navbar-brand">
+                    <img src="logo.png">
+                    {{ $title }}
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        {{/* Filter only containers with home enabled */}}
+        {{ $ := whereLabelValueMatches $ "traefik.home" "true" }}
+
+        {{/* Loop all containers having a category defined */}}
+        {{ range $category, $containers := groupByLabel $ "traefik.home.category" }}
+            <div class="col-xs-12"><h1>{{ $category }}</h1></div>
+
+            {{/* Loop containers retrieving host */}}
+            {{ range $host, $containers := groupByLabel $containers "traefik.frontend.rule" }}
+
+                {{/* Get the first parameter if host contains multi values */}}
+                {{ $host := replace (first (split $host ",")) "Host:" "" 1 }}
+
+                {{ range $container := $containers }}
+                    {{ $protocol := when (contains $container.Labels "traefik.frontend.entryPoints") (first (split (index $container.Labels "traefik.frontend.entryPoints") ",")) "http" }}
+                    <div class="col-lg-2 col-md-2 col-xs-4">
+                        <div class="item" onclick="window.open('{{ $protocol }}://{{ $host }}')">
+
+                            {{/* Get image if specified otherwise generate initials */}}
+                            {{ $image := index $container.Labels "traefik.home.image" }}
+                            <img data-name="{{ $container.Name }}" src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
+
+                            {{ if index $container.Labels "traefik.frontend.auth.basic" }}
+                                <span class="glyphicon glyphicon-lock"></span> 
+                            {{ end }}
+                            <a class="link" href="{{ $protocol }}://{{ $host }}" target="_blank">{{ if (index $container.Labels "traefik.home.alias") }}{{ index $container.Labels "traefik.home.alias" }}{{ else }}{{ $container.Name }}{{ end }}</a>
+                        </div>
+                        {{/* Show description if provided */}}
+                        {{ if (index $container.Labels "traefik.home.description") }}
+                            <hr>
+                            <p class="description">{{ index $container.Labels "traefik.home.description" }}</p>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            {{ end }}
+        {{ end }}
+
+        {{/* Loop all containers with no specified category */}}
+        {{ $containers := whereLabelDoesNotExist $ "traefik.home.category" }}
+
+        {{/* Show others category only if some containers have a category defined */}}
+        {{ if groupByLabel $ "traefik.home.category" }}
+            <div class="col-xs-12"><h1>Others</h1></div>
+        {{ end }}
+
+
+        {{/* Loop containers retrieving host */}}
+        {{ range $host, $containers := groupByLabel $containers "traefik.frontend.rule" }}
+
+            {{/* Get the first parameter if host contains multi values */}}
+            {{ $host := replace (first (split $host ",")) "Host:" "" 1 }}
+
+            {{ range $container := $containers }}
+                {{ $protocol := when (contains $container.Labels "traefik.frontend.entryPoints") (first (split (index $container.Labels "traefik.frontend.entryPoints") ",")) "http" }}
+                <div class="col-lg-2 col-md-2 col-xs-4">
+                    <div class="item" onclick="window.open('{{ $protocol }}://{{ $host }}')">
+
+                        
+                        {{/* Get image if specified otherwise generate initials */}}
+                        {{ $image := index $container.Labels "traefik.home.image" }}
+                        <img data-name="{{ $container.Name }}" src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
+                      
+                        {{ if index $container.Labels "traefik.frontend.auth.basic" }}
+                            <span class="glyphicon glyphicon-lock"></span> 
+                        {{ end }}
+                        <a class="link" href="{{ $protocol }}://{{ $host }}" target="_blank">{{ if (index $container.Labels "traefik.home.alias") }}{{ index $container.Labels "traefik.home.alias" }}{{ else }}{{ $container.Name }}{{ end }}</a>
+                    </div>
+                    {{/* Show description if provided */}}
+                    {{ if (index $container.Labels "traefik.home.description") }}
+                        <hr>
+                        <p class="description">{{ index $container.Labels "traefik.home.description" }}</p>
+                    {{ end }}
+                </div>
+            {{ end }}
+        {{ end }}
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/judesfernando/initial.js/master/dist/initial.min.js"></script>
+
+    <script>
+        $( document ).ready(function() {
+            $('.profile.initial').initial({
+                charCount: 2,
+                fontSize: 35,
+                height: 80,
+                width: 80,
+                fontWeight: 500
+            });
+
+            $('img').error(function(){
+                $(this).remove();
+            });
+        });
+    </script>
+
+</body>
+
+</html>
