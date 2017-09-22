@@ -102,7 +102,7 @@
         {{ $containers := whereLabelDoesNotExist $ "traefik.home.category" }}
 
         {{/* Show others category only if some containers have a category defined */}}
-        {{ if groupByLabel $ "traefik.home.category" }}
+        {{ if and (groupByLabel $ "traefik.home.category") ($containers) }}
             <div class="col-xs-12"><h1>Others</h1></div>
         {{ end }}
 
