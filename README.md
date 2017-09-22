@@ -69,6 +69,6 @@ When exposing containers through `traefik`, the following labels can be added to
 | ------------- | ------------- |
 | traefik.home=true  | Container shown/hidden on HTML page if set to true/false |
 | traefik.home.category=My Category  | Containers grouped by categories if defined |
-| traefik.home.image  | URL of image for icon. If no image precised, a icon with the container's initials is generated |
-| traefik.home.alias  | If filled, the alias is taken instead of the container name for the icon label |
-| traefik.home.description  | If filled, a description is displayed below the icon |
+| traefik.home.image=http://urlofimage.png  | URL of image for icon. If no image precised, a icon with the container's initials is generated |
+| traefik.home.alias=My Alias  | If filled, the alias is taken instead of the container name for the icon label |
+| traefik.home.description=My Description  | If filled, a description is displayed below the icon |
