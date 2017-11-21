@@ -31,6 +31,11 @@
             background-color: {{ $bg_color }};
             border: none;
         }
+        .navbar-header > img {
+            height: 50px;
+            padding: 5px;
+            float: left;
+        }
         .navbar-brand {
             color: {{ $text_color }};
         }
@@ -51,8 +56,8 @@
     <nav class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
+                <img src="logo.png">
                 <span class="navbar-brand">
-                    <img src="logo.png">
                     {{ $title }}
                 </span>
             </div>
