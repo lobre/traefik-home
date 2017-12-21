@@ -86,7 +86,7 @@
 
                             {{/* Get image if specified otherwise generate initials */}}
                             {{ $image := index $container.Labels "traefik.home.image" }}
-                            <img data-name="{{ $container.Name }}" src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
+                            <img data-name='{{ if (index $container.Labels "traefik.home.alias") }}{{ index $container.Labels "traefik.home.alias" }}{{ else }}{{ $container.Name }}{{ end }}' src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
 
                             {{ if index $container.Labels "traefik.frontend.auth.basic" }}
                                 <span class="glyphicon glyphicon-lock"></span> 
@@ -126,7 +126,7 @@
                         
                         {{/* Get image if specified otherwise generate initials */}}
                         {{ $image := index $container.Labels "traefik.home.image" }}
-                        <img data-name="{{ $container.Name }}" src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
+                        <img data-name='{{ if (index $container.Labels "traefik.home.alias") }}{{ index $container.Labels "traefik.home.alias" }}{{ else }}{{ $container.Name }}{{ end }}' src="{{ if $image }}{{ $image }}{{ end }}" class="profile {{ if not $image}} initial {{ end }}"/>
                       
                         {{ if index $container.Labels "traefik.frontend.auth.basic" }}
                             <span class="glyphicon glyphicon-lock"></span> 
